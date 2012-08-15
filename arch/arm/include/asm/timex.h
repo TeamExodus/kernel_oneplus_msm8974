@@ -14,7 +14,8 @@
 
 #include <mach/timex.h>
 
-typedef unsigned long cycles_t;
 #define get_cycles()	({ cycles_t c; read_current_timer(&c) ? 0 : c; })
+
+#include <asm-generic/timex.h>
 
 #endif
