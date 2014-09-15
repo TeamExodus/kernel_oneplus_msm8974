@@ -23,6 +23,13 @@
 	aliases {
 		serial0 = &blsp1_uart1;
 	};
+
+	oem_data_mem: oem_data_region@5900000 {
+		linux,reserve-contiguous-region;
+		linux,reserve-region;
+		linux,remove-completely;
+		reg = <0x5900000 0x100000>;
+	};
 };
 
 &soc {
@@ -31,12 +38,20 @@
 	};
 
 /*
-	¡qcom,mdss_dsi@fd922800 {
+	qcom,mdss_dsi@fd922800 {
 		qcom,dsi-pref-prim-pan = <&dsi_tosh_720_vid>;
+
+	qcom,mdss_mdp@fd900000 {
+		qcom,mdss-pref-prim-intf = "dsi";
+		batfet-supply = <&pm8941_chg_batif>;
 	};
 */
 
-
+        oem_data_sharedmem {
+                compatible = "qcom,sharedmem-uio";
+                reg = <0x5900000 0x100000>;
+                reg-names = "oem_data";
+        };
 
 	qcom,mdss_dsi@fd922800 {
 		qcom,dsi-pref-prim-pan = <&dsi_jdi_1080_cmd>;
