@@ -86,8 +86,12 @@ pte_alloc_one_kernel(struct mm_struct *mm, unsigned long addr)
 	pte_t *pte;
 
 	pte = (pte_t *)__get_free_page(PGALLOC_GFP);
-	if (pte)
+	#if !defined(CONFIG_CPU_CACHE_V7) || !defined(CONFIG_SMP)
+	if (pte) {
 		clean_pte_table(pte);
+		inc_zone_page_state(virt_to_page(pte), NR_PAGETABLE);
+	}
+#endif
 
 	return pte;
 }
@@ -103,8 +107,10 @@ pte_alloc_one(struct mm_struct *mm, unsigned long addr)
 	pte = alloc_pages(PGALLOC_GFP, 0);
 #endif
 	if (pte) {
+#if !defined(CONFIG_CPU_CACHE_V7) || !defined(CONFIG_SMP)
 		if (!PageHighMem(pte))
 			clean_pte_table(page_address(pte));
+#endif
 		pgtable_page_ctor(pte);
 	}
 

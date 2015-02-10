@@ -643,9 +643,9 @@ int vfp_restore_user_hwstate(struct user_vfp __user *ufp,
 static int vfp_hotplug(struct notifier_block *b, unsigned long action,
 	void *hcpu)
 {
-	if (action == CPU_DYING || action == CPU_DYING_FROZEN) {
-		vfp_force_reload((long)hcpu, current_thread_info());
-	} else if (action == CPU_STARTING || action == CPU_STARTING_FROZEN)
+	if (action == CPU_DYING || action == CPU_DYING_FROZEN)
+		vfp_current_hw_state[(long)hcpu] = NULL;
+	else if (action == CPU_STARTING || action == CPU_STARTING_FROZEN)
 		vfp_enable(NULL);
 	return NOTIFY_OK;
 }
@@ -695,6 +695,26 @@ void kernel_neon_end(void)
 EXPORT_SYMBOL(kernel_neon_end);
 
 #endif /* CONFIG_KERNEL_MODE_NEON */
+
+void vfp_kmode_exception(void)
+{
+	/*
+	 * If we reach this point, a floating point exception has been raised
+	 * while running in kernel mode. If the NEON/VFP unit was enabled at the
+	 * time, it means a VFP instruction has been issued that requires
+	 * software assistance to complete, something which is not currently
+	 * supported in kernel mode.
+	 * If the NEON/VFP unit was disabled, and the location pointed to below
+	 * is properly preceded by a call to kernel_neon_begin(), something has
+	 * caused the task to be scheduled out and back in again. In this case,
+	 * rebuilding and running with CONFIG_DEBUG_ATOMIC_SLEEP enabled should
+	 * be helpful in localizing the problem.
+	 */
+	if (fmrx(FPEXC) & FPEXC_EN)
+		pr_crit("BUG: unsupported FP instruction in kernel mode\n");
+	else
+		pr_crit("BUG: FP instruction issued in kernel mode with FP unit disabled\n");
+}
 
 /*
  * VFP support code initialisation.
