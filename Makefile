@@ -373,14 +373,14 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks\
+		   -fno-delete-null-pointer-checks \
 		   $(GEN_OPT_FLAGS)
 KBUILD_AFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_CFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE $(GEN_OPT_FLAGS)
-KBUILD_CFLAGS_MODULE  := -DMODULE $(GEN_OPT_FLAGS)
-KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
+KBUILD_CFLAGS_MODULE  := -flto -fuse-linker-plugin -DMODULE $(GEN_OPT_FLAGS)
+KBUILD_LDFLAGS_MODULE := -flto -fuse-linker-plugin -T $(srctree)/scripts/module-common.lds
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
