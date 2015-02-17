@@ -29,8 +29,8 @@
  * Endian independent macros for shifting bytes within registers.
  */
 #ifndef __ARMEB__
-#define pull            lsr
-#define push            lsl
+#define pullbits        lsr
+#define pushbits        lsl
 #define get_byte_0      lsl #0
 #define get_byte_1	lsr #8
 #define get_byte_2	lsr #16
@@ -40,8 +40,8 @@
 #define put_byte_2	lsl #16
 #define put_byte_3	lsl #24
 #else
-#define pull            lsl
-#define push            lsr
+#define pullbits        lsl
+#define pushbits        lsr
 #define get_byte_0	lsr #24
 #define get_byte_1	lsr #16
 #define get_byte_2	lsr #8
@@ -57,8 +57,10 @@
  */
 #if __LINUX_ARM_ARCH__ >= 5
 #define PLD(code...)	code
+#define NO_PLD(code...)
 #else
 #define PLD(code...)
+#define NO_PLD(code...) code
 #endif
 
 /*
@@ -71,9 +73,30 @@
  * On Feroceon there is much to gain however, regardless of cache mode.
  */
 #ifdef CONFIG_CPU_FEROCEON
+#define WRITE_ALIGN_BYTES 32
+#define MEMSET_WRITE_ALIGN_BYTES 32
+#elif __LINUX_ARM_ARCH__ == 6
+#define WRITE_ALIGN_BYTES 8
+#define MEMSET_WRITE_ALIGN_BYTES 32
+else
+#define WRITE_ALIGN_BYTES 0
+#define MEMSET_WRITE_ALIGN_BYTES 8
+#endif
+
+/*
+ * At the moment the CALGN macro implements 32-byte write alignment in
+ * copy_template.S and is not compatible with Thumb2, so only enable it
+ * if WRITE_ALIGN_BYTES == 32 and Thumb2 mode is not enabled.
+ */
+#if WRITE_ALIGN_BYTES == 32 && !defined(CONFIG_THUMB2_KERNEL)
 #define CALGN(code...) code
 #else
 #define CALGN(code...)
+#endif
+#if MEMSET_WRITE_ALIGN_BYTES > 0
+#define MEMSET_CALGN(code...) code
+#else
+#define MEMSET_CALGN(code...)
 #endif
 
 /*

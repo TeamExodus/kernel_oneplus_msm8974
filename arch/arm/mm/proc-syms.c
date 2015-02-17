@@ -31,6 +31,7 @@ EXPORT_SYMBOL(__cpuc_flush_dcache_area);
 EXPORT_SYMBOL(dmac_inv_range);
 EXPORT_SYMBOL(dmac_clean_range);
 EXPORT_SYMBOL(dmac_flush_range);
+EXPORT_SYMBOL(__cpuc_flush_kern_louis);
 #else
 EXPORT_SYMBOL(cpu_cache);
 #endif

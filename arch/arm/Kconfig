@@ -43,6 +43,7 @@ config ARM
 	select GENERIC_STRNCPY_FROM_USER
 	select GENERIC_STRNLEN_USER
 	select DCACHE_WORD_ACCESS if HAVE_EFFICIENT_UNALIGNED_ACCESS
+	select ARCH_USE_BUILTIN_BSWAP
 	help
 	  The ARM series is a line of low-power-consumption RISC chip designs
 	  licensed by ARM Ltd and targeted at embedded applications and
@@ -186,12 +187,9 @@ config ARM_TICKET_LOCKS
 	default y if ARCH_MSM_SCORPIONMP || ARCH_MSM_KRAITMP
 	depends on SMP
 
-config RWSEM_GENERIC_SPINLOCK
-	bool
-	default y
-
 config RWSEM_XCHGADD_ALGORITHM
 	bool
+	default y
 
 config ARCH_HAS_ILOG2_U32
 	bool
@@ -2525,6 +2523,11 @@ config ARCH_SUSPEND_POSSIBLE
 
 config ARM_CPU_SUSPEND
 	def_bool PM_SLEEP
+
+config ARCH_HIBERNATION_POSSIBLE
+	bool
+	depends on MMU
+	default y if ARCH_SUSPEND_POSSIBLE
 
 endmenu
 
