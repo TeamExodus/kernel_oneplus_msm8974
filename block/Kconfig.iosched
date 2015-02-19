@@ -110,18 +110,9 @@ choice
 	config DEFAULT_CFQ
 		bool "CFQ" if IOSCHED_CFQ=y
 
-<<<<<<< HEAD
-=======
 	config DEFAULT_BFQ
 		bool "BFQ" if IOSCHED_BFQ=y
 
-	config DEFAULT_FIOPS
-		bool "FIOPS" if IOSCHED_FIOPS=y
-
-	config DEFAULT_SIO
-		bool "SIO" if IOSCHED_SIO=y
-
->>>>>>> d6e8b12... block: bfq: cgroups, kconfig, build bits for BFQ-v7r7-3.4
 	config DEFAULT_NOOP
 		bool "No-op"
 
