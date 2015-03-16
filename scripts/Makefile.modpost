@@ -82,7 +82,7 @@ modpost = scripts/mod/modpost                    \
  $(if $(CONFIG_DEBUG_SECTION_MISMATCH),,-S)      \
  $(if $(CONFIG_NO_ERROR_ON_MISMATCH),,-E)	 \
  $(if $(KBUILD_EXTMOD)$(KBUILD_MODPOST_WARN),-w) \
- $(if $(CONFIG_LTO),-w)
+ $(if $(CONFIG_LTO),-w) \
  $(if $(cross_build),-c)
 
 quiet_cmd_modpost = MODPOST $(words $(filter-out vmlinux FORCE, $^)) modules
