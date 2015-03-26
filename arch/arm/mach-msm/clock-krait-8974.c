@@ -615,16 +615,6 @@ static void krait_update_uv(int *uv, int num, int boost_uv)
 	}
 }
 
-static unsigned long clock_get_max_rate(struct clk *clk)
-{
-	unsigned long fmax = 0, i;
-
-	for (i = 0; i < clk->num_fmax; i++)
-		fmax = max(clk->fmax[i], fmax);
-
-	return fmax;
-}
-
 static char table_name[] = "qcom,speedXX-pvsXX-bin-vXX";
 module_param_string(table_name, table_name, sizeof(table_name), S_IRUGO);
 static unsigned int pvs_config_ver;
@@ -635,7 +625,7 @@ static int clock_krait_8974_driver_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct clk *c;
 	int speed, pvs, svs_pvs, pvs_ver, config_ver, rows, cpu, svs_row = 0;
-	unsigned long *freq, *svs_freq, cur_rate, aux_rate, fmax;
+	unsigned long *freq, *svs_freq, cur_rate, aux_rate;
 	int *uv, *ua, *svs_uv, *svs_ua;
 	u32 *dscr, vco_mask, config_val, svs_fmax;
 	int ret;
@@ -866,9 +856,6 @@ static int clock_krait_8974_driver_probe(struct platform_device *pdev)
 		pr_info("L2 @ unknown rate. Forcing new rate.\n");
 		cur_rate = aux_rate;
 	}
-	fmax = clock_get_max_rate(&l2_clk.c);
-	if (fmax)
-		cur_rate = clk_round_rate(&l2_clk.c, fmax);
 	clk_set_rate(&l2_clk.c, aux_rate);
 	clk_set_rate(&l2_clk.c, clk_round_rate(&l2_clk.c, 1));
 	clk_set_rate(&l2_clk.c, cur_rate);
@@ -881,9 +868,6 @@ static int clock_krait_8974_driver_probe(struct platform_device *pdev)
 				cpu);
 			cur_rate = aux_rate;
 		}
-		fmax =  clock_get_max_rate(c);
-		if (fmax)
-			cur_rate = clk_round_rate(c, fmax);
 		clk_set_rate(c, aux_rate);
 		clk_set_rate(c, clk_round_rate(c, 1));
 		clk_set_rate(c, clk_round_rate(c, cur_rate));
