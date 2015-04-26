@@ -21,7 +21,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/notifier.h>
-#include <linux/cpufreq.h>
+#include <linux/cpufreq.h>F
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
@@ -468,6 +468,11 @@ static ssize_t store_##file_name					\
 	unsigned int ret = -EINVAL;					\
 	struct cpufreq_policy new_policy;				\
 									\
+	int mpd = strcmp(current->comm, "mpdecision");			\
+									\
+			if (mpd == 0)					\
+					return ret;			\					
+	
 	ret = cpufreq_get_policy(&new_policy, policy->cpu);		\
 	if (ret)							\
 		return -EINVAL;						\
