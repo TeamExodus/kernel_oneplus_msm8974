@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -613,9 +613,13 @@ void extract_dci_pkt_rsp(unsigned char *buf, int len, int data_source,
 	save_req_uid = req_entry->uid;
 
 	/* Remove the headers and send only the response to this function */
+	mutex_lock(&driver->dci_mutex);
 	delete_flag = diag_dci_remove_req_entry(temp, rsp_len, req_entry);
-	if (delete_flag < 0)
+	if (delete_flag < 0) {
+		mutex_unlock(&driver->dci_mutex);
 		return;
+	}
+	mutex_unlock(&driver->dci_mutex);
 
 	entry = __diag_dci_get_client_entry(curr_client_pid);
 	if (!entry) {
@@ -1287,9 +1291,11 @@ static int diag_process_dci_pkt_rsp(unsigned char *buf, int len)
 				 * registered on the Apps Processor
 				 */
 				if (entry.cmd_code_lo == MODE_CMD &&
-				    entry.cmd_code_hi == MODE_CMD)
+				    entry.cmd_code_hi == MODE_CMD &&
+					header->subsys_id == RESET_ID) {
 					if (entry.client_id != APPS_DATA)
 						continue;
+				}
 					ret = diag_send_dci_pkt(entry, buf, len,
 								req_entry->tag);
 					found = 1;
