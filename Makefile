@@ -364,7 +364,9 @@ GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv7-a) \
         -g0 \
         -DNDEBUG \
         -fomit-frame-pointer \
-        -funsafe-math-optimizations
+        -funsafe-math-optimizations \
+	-fmodulo-sched \
+	-fmodulo-sched-allow-regmoves
 
 # Use LINUXINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
@@ -605,6 +607,7 @@ ifndef CONFIG_FUNCTION_TRACER
 KBUILD_CFLAGS	+= -fomit-frame-pointer
 endif
 endif
+
 
 ifdef CONFIG_DEBUG_INFO
 KBUILD_CFLAGS	+= -g
