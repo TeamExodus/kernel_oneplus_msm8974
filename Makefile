@@ -366,7 +366,8 @@ GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv7-a) \
         -fomit-frame-pointer \
         -funsafe-math-optimizations \
 	-fmodulo-sched \
-	-fmodulo-sched-allow-regmoves
+	-fmodulo-sched-allow-regmoves \
+	-fivopts
 
 # Use LINUXINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
