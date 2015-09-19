@@ -364,7 +364,6 @@ GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv7-a) \
         -g0 \
         -DNDEBUG \
         -fomit-frame-pointer \
-        -funsafe-math-optimizations \
 	-fmodulo-sched \
 	-fmodulo-sched-allow-regmoves \
 	-fivopts
