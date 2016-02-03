@@ -1629,6 +1629,14 @@ struct task_struct {
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 	atomic_t ptrace_bp_refcnt;
 #endif
+#ifdef VENDOR_EDIT
+	ktime_t base;
+	u64 accum_total;
+	u64 accum_area_tag;
+	u64 optimal_boost_freq;
+	u64 mig_tag;
+	u64 boost_sub_freq;
+#endif
 };
 
 /* Future-safe accessor for struct task_struct's cpus_allowed. */

@@ -66,6 +66,7 @@ static char *saved_command_line_rf_version = NULL;
 static struct ddr_info saved_command_line_ddr_version;
 static int  current_pcb_version_num = PCB_VERSION_UNKNOWN;
 static int  current_rf_version_num = RF_VERSION_UNKNOWN;
+static char serialno[16];
 
 /* pcb_version_num: evb=10, evt=20, dvt=30, pvt=40, unkown=99 */
 int get_pcb_version(void)
@@ -76,6 +77,10 @@ int get_pcb_version(void)
 int get_rf_version(void)
 {
 	return current_rf_version_num;
+}
+char * get_serialno(void)
+{
+        return serialno;
 }
 /*Get ddr information, include ddr manufacture information and ddr row information*/
 int get_ddr_info(struct ddr_info *ddr_information){
@@ -441,6 +446,24 @@ static int __init boot_mode_init(void)
     printk(KERN_INFO "%s: parse boot_mode is %s\n", __func__, boot_mode);
     return 1;
 }
+
+static int __init serialno_init(void)
+{
+    int i;
+    char *substr = strstr(boot_command_line, "androidboot.serialno=");
+    if(substr != NULL)
+        substr += strlen("androidboot.serialno=");
+    else
+        return 0;
+
+    for(i=0; substr[i] != ' '; i++) {
+        serialno[i] = substr[i];
+    }
+    serialno[i] = '\0';
+
+    printk(KERN_INFO "%s: parse serialno is %s\n", __func__, serialno);
+    return 1;
+}
 //__setup("androidboot.mode=", boot_mode_setup);
 /*  2013-09-03 zhanglong add for add interface start reason and boot_mode end */
 #endif //CONFIG_VENDOR_EDIT
@@ -577,6 +600,7 @@ void __init msm8974_init(void)
 /*  2013-09-03 zhanglong add for add interface start reason and boot_mode begin */
     start_reason_init();
     boot_mode_init();
+    serialno_init();
 /*  2013-09-03 zhanglong add for add interface start reason and boot_mode end */
 #endif //CONFIG_VENDOR_EDIT
 

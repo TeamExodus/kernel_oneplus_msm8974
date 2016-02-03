@@ -96,6 +96,23 @@ static int boost_adjust_notify(struct notifier_block *nb, unsigned long val, voi
 
 	switch (val) {
 	case CPUFREQ_ADJUST:
+#ifdef VENDOR_EDIT
+		if (b_min) {
+			if (workload_boost) {
+				min = cpufreq_update_wb_hint(policy);
+				if (!min)
+					pr_debug("[cpu_boost] No workload\n");
+				else if (min == 1) {
+					b_min = 0;
+					pr_debug("[cpu_boost] Boost no need\n");
+				} else {
+					pr_debug("WBH: min(%u, %u)\n",
+							b_min, min);
+					b_min = min(b_min, min);
+				}
+			}
+		}
+#endif
 		if (!b_min && !ib_min)
 			break;
 
@@ -192,18 +209,17 @@ static int boost_mig_sync_thread(void *data)
 		} else {
 			s->boost_min = src_policy.cur;
 		}
+
 		/* Force policy re-evaluation to trigger adjust notifier. */
 		get_online_cpus();
 		if (cpu_online(dest_cpu)) {
 			cpufreq_update_policy(dest_cpu);
 			queue_delayed_work_on(dest_cpu, cpu_boost_wq,
 				&s->boost_rem, msecs_to_jiffies(boost_ms));
-		} else {
+		} else
 			s->boost_min = 0;
-		}
 		put_online_cpus();
 	}
-
 	return 0;
 }
 

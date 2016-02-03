@@ -3762,7 +3762,7 @@ static long kgsl_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 	char ustack[64];
 	void *uptr = NULL;
 
-#ifndef VENDOR_EDIT
+#ifdef VENDOR_EDIT
 //huruihuan add for regnoize game apps
     if(!current->group_leader->game_flag && (!memcmp(current->comm, "UnityMain", 9) 
 	    || !memcmp(current->comm, "GLThread", 8) || !memcmp(current->comm, "Thread", 6))

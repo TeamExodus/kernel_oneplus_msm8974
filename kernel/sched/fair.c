@@ -31,6 +31,8 @@
 //add by huruihuan for tradeoff performence and power
 #include <linux/oneplus.h>
 #endif
+#include <linux/cpufreq.h>
+
 #include <trace/events/sched.h>
 
 #include "sched.h"
@@ -3270,8 +3272,22 @@ static void move_task(struct task_struct *p, struct lb_env *env)
 	set_task_cpu(p, env->dst_cpu);
 	activate_task(env->dst_rq, p, 0);
 	check_preempt_curr(env->dst_rq, p, 0);
+#ifdef VENDOR_EDIT
+	if (task_notify_on_migrate(p)) {
+		if (p->optimal_boost_freq) {
+			__cpufreq_boost_hint_sub(env->src_cpu,
+				p->boost_sub_freq, p->mig_tag);
+			p->mig_tag = __cpufreq_boost_hint_add(
+						env->dst_cpu,
+						p->optimal_boost_freq);
+			p->boost_sub_freq = p->optimal_boost_freq;
+		}
+		per_cpu(dbs_boost_needed, env->dst_cpu) = true;
+	}
+#else
 	if (task_notify_on_migrate(p))
 		per_cpu(dbs_boost_needed, env->dst_cpu) = true;
+#endif
 }
 
 /*
