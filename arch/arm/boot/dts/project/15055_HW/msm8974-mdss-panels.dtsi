@@ -10,11 +10,4 @@
  * GNU General Public License for more details.
  */
 
-/include/ "msm8974pro-pm8941.dtsi"
-
-/ {
-	qcom,msm-id = <194 0x10000>,
-		      <210 0x10000>,
-		      <213 0x10000>,
-		      <216 0x10000>;
-};
+/include/ "dsi-panel-samsung_s6e3fa3_1080p_cmd.dtsi"
