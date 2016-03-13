@@ -12,12 +12,6 @@
 
 /include/ "msm8974-camera-sensor-mtp.dtsi"
 /include/ "msm8974-leds.dtsi"
-/include/ "dsi-panel-jdi-1080p-cmd.dtsi"
-/include/ "dsi-panel-jdi-1080p-video.dtsi"
-
-/include/ "dsi-panel-truly-1080p-video.dtsi"
-/include/ "dsi-panel-sharp-1080p-cmd.dtsi"
-/include/ "dsi-panel-truly-1080p-cmd.dtsi"
 /include/ "msm8974-regulator.dtsi" /*ranfei add*/
 / {
 	aliases {
@@ -30,31 +24,11 @@
 		status = "ok";
 	};
 
-/*
-	¡qcom,mdss_dsi@fd922800 {
-		qcom,dsi-pref-prim-pan = <&dsi_tosh_720_vid>;
-	};
-*/
-
-
-
-	/*qcom,mdss_dsi@fd922800 {
-		qcom,dsi-pref-prim-pan = <&dsi_jdi_1080_cmd>;
-	};*/
-
-
 	qcom,mdss_dsi@fd922800 {
 		qcom,dsi-pref-prim-pan = <&dsi_samsung_s6e3fa3_1080p_cmd>;
 	};
 
 
-
-/*
-	qcom,mdss_dsi@fd922800 {
-		qcom,dsi-pref-prim-pan = <&dsi_jdi_1080_vid>;
-	};
-*/
-	
 
 	qcom,mdss_mdp@fd900000 {
 		qcom,mdss-pref-prim-intf = "dsi";
@@ -986,53 +960,3 @@ gpio@e000 { /* GPIO 33 */
 		qcom,cdc-micbias4-ext-cap;
 	};
 };
-/*
-&spi_epm {
-	epm-adc@0 {
-		compatible = "cy,epm-adc-cy8c5568lti-114";
-		reg = <0>;
-		interrupt-parent = <&msmgpio>;
-		spi-max-frequency = <960000>;
-		qcom,channels = <31>;
-		qcom,gain = <100 100 100 50 100 100 1 100 1 50
-				1 100 1 100 50 50 50 50 50 50
-				100 50 100 50 50 50 50 50 50 50
-				50>;
-		qcom,rsense = <2 2 2 200 20 2 1 2 1 30
-				1 10 1 30 50 30 500 30 100 30
-				100 500 20 200 1000 20 1000 1000 70 200
-				50>;
-		qcom,channel-type = <0x1540>;
-	};
-};*/
-
-
-
-/*
-&dsi_tosh_720_vid {
-       qcom,cont-splash-enabled;
-};
-
-&dsi_generic_720p_cmd {
-       qcom,cont-splash-enabled;
-};
-
-&dsi_jdi_1080_vid {
-       qcom,cont-splash-enabled;
-};
-*/
-
-
-
-&dsi_jdi_1080_cmd {
-       qcom,cont-splash-enabled;
-};
-
-//&dsi_jdi_1080_vid {
-      // qcom,cont-splash-enabled;
-//};
-
-
-
-
-
