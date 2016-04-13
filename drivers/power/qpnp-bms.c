@@ -3725,15 +3725,9 @@ static void battery_insertion_check(struct qpnp_bms_chip *chip)
 /* Returns capacity as a SoC percentage between 0 and 100 */
 static int get_prop_bms_capacity(struct qpnp_bms_chip *chip)
 {
-#ifdef CONFIG_VENDOR_EDIT
 
-	if (chip->last_soc == chip->calculated_soc)
-		return chip->last_soc;
-	else
-		return report_state_of_charge(chip);
-#else
 	return report_state_of_charge(chip);
-#endif
+
 }
 
 static void qpnp_bms_external_power_changed(struct power_supply *psy)
