@@ -84,16 +84,8 @@ static struct posix_acl *f2fs_acl_from_disk(const char *value, size_t size)
 			break;
 
 		case ACL_USER:
-			acl->a_entries[i].e_uid =
-				make_kuid(&init_user_ns,
-						le32_to_cpu(entry->e_id));
-			entry = (struct f2fs_acl_entry *)((char *)entry +
-					sizeof(struct f2fs_acl_entry));
-			break;
 		case ACL_GROUP:
-			acl->a_entries[i].e_gid =
-				make_kgid(&init_user_ns,
-						le32_to_cpu(entry->e_id));
+			acl->a_entries[i].e_id = le32_to_cpu(entry->e_id);
 			entry = (struct f2fs_acl_entry *)((char *)entry +
 					sizeof(struct f2fs_acl_entry));
 			break;
@@ -115,7 +107,7 @@ static void *f2fs_acl_to_disk(const struct posix_acl *acl, size_t *size)
 	struct f2fs_acl_entry *entry;
 	int i;
 
-	f2fs_acl = kmalloc(sizeof(struct f2fs_acl_header) + acl->a_count *
+	f2fs_acl = f2fs_kmalloc(sizeof(struct f2fs_acl_header) + acl->a_count *
 			sizeof(struct f2fs_acl_entry), GFP_NOFS);
 	if (!f2fs_acl)
 		return ERR_PTR(-ENOMEM);
@@ -130,16 +122,8 @@ static void *f2fs_acl_to_disk(const struct posix_acl *acl, size_t *size)
 
 		switch (acl->a_entries[i].e_tag) {
 		case ACL_USER:
-			entry->e_id = cpu_to_le32(
-					from_kuid(&init_user_ns,
-						acl->a_entries[i].e_uid));
-			entry = (struct f2fs_acl_entry *)((char *)entry +
-					sizeof(struct f2fs_acl_entry));
-			break;
 		case ACL_GROUP:
-			entry->e_id = cpu_to_le32(
-					from_kgid(&init_user_ns,
-						acl->a_entries[i].e_gid));
+			entry->e_id = cpu_to_le32(acl->a_entries[i].e_id);
 			entry = (struct f2fs_acl_entry *)((char *)entry +
 					sizeof(struct f2fs_acl_entry));
 			break;
@@ -183,7 +167,7 @@ static struct posix_acl *__f2fs_get_acl(struct inode *inode, int type,
 
 	retval = f2fs_getxattr(inode, name_index, "", NULL, 0, dpage);
 	if (retval > 0) {
-		value = kmalloc(retval, GFP_F2FS_ZERO);
+		value = f2fs_kmalloc(retval, GFP_F2FS_ZERO);
 		if (!value)
 			return ERR_PTR(-ENOMEM);
 		retval = f2fs_getxattr(inode, name_index, "", value,
@@ -361,7 +345,7 @@ static int f2fs_xattr_get_acl(struct dentry *dentry, const char *name,
 		return PTR_ERR(acl);
 	if (!acl)
 		return -ENODATA;
-	error = posix_acl_to_xattr(&init_user_ns, acl, buffer, size);
+	error = posix_acl_to_xattr(acl, buffer, size);
 	posix_acl_release(acl);
 
 	return error;
@@ -383,7 +367,7 @@ static int f2fs_xattr_set_acl(struct dentry *dentry, const char *name,
 		return -EPERM;
 
 	if (value) {
-		acl = posix_acl_from_xattr(&init_user_ns, value, size);
+		acl = posix_acl_from_xattr(value, size);
 		if (IS_ERR(acl))
 			return PTR_ERR(acl);
 		if (acl) {
