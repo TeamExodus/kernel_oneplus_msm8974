@@ -1273,6 +1273,9 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 	struct cpufreq_interactive_cpuinfo *pcpu;
 	struct cpufreq_frequency_table *freq_table;
 	unsigned long expire_time;
+#ifdef VENDOR_EDIT
+	unsigned int inter_freq, workload_boost_hint;
+#endif
 
 	switch (event) {
 	case CPUFREQ_GOV_START:
